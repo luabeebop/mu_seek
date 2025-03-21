@@ -14,7 +14,7 @@ root.config(menu=menubar) #This is to configure the menu bar
 
 songs = [] #This is the list of songs
 current_song = "" #This is the current song
-pause = False #This is the current state of the music
+paused = False #This is the current state of the music
 
 def load_music(): #This is to load the music
     global current_song #This is to access the current song variable
@@ -34,16 +34,41 @@ def load_music(): #This is to load the music
 # Buttons functionality
 
 def play_music(): #This is to play the music
-    pass #This is to pass the function
+    global current_song, paused
+
+    if not paused:
+        pygame.mixer.music.load(os.path.join(root.directory, current_song)) #This is to load the current song
+        pygame.mixer.music.play() #This is to play the current song
+    else:
+        pygame.mixer.unpause()
+        paused = False
 
 def pause_music(): #This is to pause the music
-    pass #This is to pass the function
+    global paused
+    pygame.mixer.pause()
+    paused = True
 
 def next_music(): #This is to play the next music
-    pass #This is to pass the function
+    global current_song, paused #This is to access the current song and paused variables
+    
+    try:
+        songlist.selection_clear(0, "end") #This is to clear the selection
+        songlist.selection_set(songs.index(current_song) + 1) #This is to select the next song
+        current_song = songs[songlist.curselection()[0]] #This is to get the current song
+        play_music() #This is to play the current song
+    except: #This is to handle the exception
+        pass
 
 def previous_music(): #This is to play the previous music
-    pass #This is to pass the function
+    global current_song, paused
+    
+    try:
+        songlist.selection_clear(0, END)
+        songlist.selection_set(songs.index(current_song) - 1)
+        current_song = songs[songlist.curselection()[0]]
+        play_music()
+    except:
+            pass
 
 organize_menu = Menu(menubar, tearoff=False) #This is the organize menu
 menubar.add_cascade(label="Selection", menu=organize_menu) #This is to add the organize menu to the menu bar
@@ -59,10 +84,10 @@ previous_btn_image = PhotoImage(file="previous.png") #This is to load the previo
 control_frame = Frame(root) #This is the frame for the control buttons
 control_frame.pack() #This is to pack the control frame
 
-play_btn = Button(control_frame, image=play_btn_image, borderwidth=0) #This is the play button
-pause_btn = Button(control_frame, image=pause_btn_image, borderwidth=0) #This is the pause button
-next_btn = Button(control_frame, image=next_btn_image, borderwidth=0) #This is the next button
-previous_btn = Button(control_frame, image=previous_btn_image, borderwidth=0) #This is the previous button
+play_btn = Button(control_frame, image=play_btn_image, borderwidth=0, command=play_music) #This is the play button
+pause_btn = Button(control_frame, image=pause_btn_image, borderwidth=0, command=pause_music) #This is the pause button
+next_btn = Button(control_frame, image=next_btn_image, borderwidth=0, command=next_music) #This is the next button
+previous_btn = Button(control_frame, image=previous_btn_image, borderwidth=0, command=previous_music) #This is the previous button
 
 play_btn.grid(row=0, column=1) #This is to place the play button in the frame
 pause_btn.grid(row=0, column=2) #This is to place the pause button in the frame
