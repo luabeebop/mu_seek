@@ -1,3 +1,4 @@
+from tkinter import filedialog
 from tkinter import *
 import pygame
 import os
@@ -11,19 +12,42 @@ pygame.mixer.init() #This is to initialize the pygame mixer
 menubar = Menu(root) #This is the menu bar
 root.config(menu=menubar) #This is to configure the menu bar
 
+songs = []
+current_song = ""
+pause = False
+
 def load_music():
-    songlist.delete(0, END) #This is to delete the songs in the songlist
-    directory = filedialog.askdirectory() #This is to open the file dialog
-    os.chdir(directory) #This is to change the directory to the selected directory
-    song_files = os.listdir() #This is to list the files in the directory
-    for file in song_files:
-        if file.endswith(".mp3"):
-            songlist.insert(END, file) #This is to insert the songs in the songlist
+    global current_song
+    root.directory = filedialog.askdirectory() #This is to open the file dialog
+
+    for song in os.listdir(root.directory):
+        name, ext = os.path.splitext(song)
+        if ext == ".mp3":
+            songs.append(song)
+
+    for song in songs:
+        songlist.insert("end", song)
+
+    songlist.selection_set(0)
+    current_song = songs[songlist.curselection()[0]]
+
+# Buttons functionality
+
+def play_music():
+    pass
+
+def pause_music():
+    pass
+
+def next_music():
+    pass
+
+def previous_music():
+    pass
 
 organize_menu = Menu(menubar, tearoff=False) #This is the organize menu
-menubar.add_cascade(label="Organize", menu=organize_menu) #This is to add the organize menu to the menu bar
-organize_menu.add_command(label="Select Folder") #This is to add the open folder option to the organize menu
-
+menubar.add_cascade(label="Selection", menu=organize_menu) #This is to add the organize menu to the menu bar
+organize_menu.add_command(label="Select Folder", command=load_music) #This is to add the select folder option to the organize menu
 songlist = Listbox(root, bg="black", fg="white", width=60, height=20) #This is the songlist box where the songs will be displayed
 songlist.pack() 
 
